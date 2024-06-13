@@ -40,7 +40,7 @@ for i in range(rows):
 codewords_CH_list = codewords_list.copy()
 
 # CH
-e = 0.8
+e = 0.5
 for r in range(rows):
     codeword = list(codewords_CH_list[r])  # 문자열을 리스트로 변환
     for n in range(N):
