@@ -1,58 +1,77 @@
 import numpy as np
-import random
+def tanh(x):
+    return np.tanh(x)
+def atanh(x):
+    return np.arctanh(x)
 
-y = '0001011'
-y_list = list(y)
-N = 7
+y = [1, 0, 1, 0, 1, 0, 1]
 e = 0.1
-print(y)
-print(type(y))
+N = len(y)
+H = np.array([[1, 0, 1, 0, 1, 0, 1],
+              [0, 1, 1, 0, 0, 1, 1],
+              [0, 0, 0, 1, 1, 1, 1]])
+row = np.size(H, 0)
+col = np.size(H, 1)
+print(row, col)
 
-# Convert string to list
-py_0 = 0
-py_1 = 0
+py_x = np.zeros((N, 2))
 for n in range(N):
-    if y_list[n] == '0':  # Use y_list instead of y
-        py_0 = 1 - e
-        py_1 = e
-    if y_list[n] == '1':  # Use y_list instead of y
-        py_0 = e
-        py_1 = 1 - e
+    if y[n] == 0:
+        py_x[n, 0] = 1 - e
+        py_x[n, 1] = e
+    if y[n] == 1:
+        py_x[n, 0] = e
+        py_x[n, 1] = 1 - e
 
-    if py_0 > py_1:
-        y_list[n] = '0'  # Modify y_list instead of y
-    if py_0 < py_1:
-        y_list[n] = '1'  # Modify y_list instead of y
+LLRc = np.zeros(N)
+for n in range(N):
+    LLRc[n] = np.log(py_x[n, 1]) - np.log(py_x[n, 0])
 
-y_modified = ''.join(y_list)
+LLR_mu = np.zeros((row, col))
+LLR_mu_hat = np.zeros((col, row))
+max_iter = 100
+# initial mu update
+for r in range(row):
+    for c in range(col):
+        if H[r][c] == 1:
+            LLR_mu[r][c] = LLRc[c]
+#
+# print(LLR_mu)
+
+mu_list = []
+mu_hat_list = []
+for m in range(max_iter):
+
+    if m == 0: # initial mu
+        mu_list.append(LLR_mu)
+        continue
+
+    mu_tmp = np.zeros((row, col))
+    mu_hat_tmp = np.zeros((col, row))
+
+    print(mu_list[m-1])
+    # mu_hat update
+    for r in range(row):
+        for c in range(col):
+            if H[r][c] == 1:
+                # ---- tanh computation start ---- #
+                tanh_tmp = 1
+                for co in range(col):
+                    if H[r][co] == 1:
+                        tanh_tmp *= tanh(mu_list[m-1][r][co] / 2)
+                # ---- tanh computation end ---- #
+                mu_hat_tmp[c][r] = 2 * atanh(tanh_tmp)
+    mu_hat_list.append(mu_hat_tmp)
 
 
-rows = 100
-cols = 4
+    for r in range(row):
+        for c in range(col):
+            if H[r][c] == 1:
+                mu_tmp[r][c] = mu_list[m-1][r][c] + sum(mu_hat_tmp[c]) - mu_hat_tmp[c][r]
 
-# 0과 1을 균등 분포로 가지는 100x4 배열 생성
-message_list = [random.choices([0, 1], k=cols) for _ in range(rows)]
-print(message_list[0])
-code = ''.join(map(str, message_list[0]))
-print(code)
+    mu_list.append(mu_tmp)
 
-message_modified = ''.join(''.join(map(str, row)) for row in message_list)
-print(message_modified)
-
-
-def count_differences(str1, str2):
-    # 두 문자열의 길이가 다를 경우 에러 처리
-    if len(str1) != len(str2):
-        raise ValueError("The two strings must have the same length.")
-
-    # 다른 글자의 수를 계산
-    differences = sum(1 for a, b in zip(str1, str2) if a != b)
-    return differences
-
-
-# 예제 사용
-string1 = '1010110'
-string2 = '1001111'
-
-difference_count = count_differences(string1, string2)
-print(f"The number of differing characters is: {difference_count}")
+output = np.zeros(N)
+for n in range(N):
+    output[n] = (sum(mu_hat_list[-1][n]) + LLRc[n]>1)
+print(output)
