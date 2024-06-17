@@ -31,6 +31,14 @@ class ConvolutionalEncoder:
             else:
                 encoded_symbol.append(1)
         return encoded_symbol
+    def symbol_decoder(self, encoded_symbol):
+        decoded_bits = []
+        for sym in encoded_symbol:
+            if sym < 0:
+                decoded_bits.append(0)
+            else:
+                decoded_bits.append(1)
+        return decoded_bits
 
     def noise_ch(self, encoded_symbol, sigma):
         encoded_noised_symbol = []

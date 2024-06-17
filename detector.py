@@ -16,26 +16,42 @@ def ML_detector(y, e):
 
     py_0 = 0
     py_1 = 0
+    if type(y) == str:
+        for n in range(N):
+            if y_list[n] == '0':  # Use y_list instead of y
+                py_0 = 1 - e
+                py_1 = e
+            if y_list[n] == '1':  # Use y_list instead of y
+                py_0 = e
+                py_1 = 1 - e
+
+            if py_0 > py_1:
+                y_list[n] = '0'  # Modify y_list instead of y
+            if py_0 < py_1:
+                y_list[n] = '1'  # Modify y_list instead of y
+
+        y_modified = ''.join(y_list)
+        return y_modified
+
     for n in range(N):
-        if y_list[n] == '0':  # Use y_list instead of y
+        if y_list[n] == 0:  # Use y_list instead of y
             py_0 = 1 - e
             py_1 = e
-        if y_list[n] == '1':  # Use y_list instead of y
+        if y_list[n] == 1:  # Use y_list instead of y
             py_0 = e
             py_1 = 1 - e
 
         if py_0 > py_1:
-            y_list[n] = '0'  # Modify y_list instead of y
+            y_list[n] = 0  # Modify y_list instead of y
         if py_0 < py_1:
-            y_list[n] = '1'  # Modify y_list instead of y
+            y_list[n] = 1  # Modify y_list instead of y
+    return y_list
 
-    y_modified = ''.join(y_list)
-    return y_modified
 
 def BP_detector(y, codewords, e):
     N = len(y)
 
-    py_x = np.zeros((2, 7))
+    py_x = np.zeros((7, 2))
     for n in range(N):
         if y[n] == 0:
             py_x[n, 0] = 1 - e

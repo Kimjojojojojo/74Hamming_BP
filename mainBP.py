@@ -21,7 +21,7 @@ codewords_array = np.array(codewords)
 
 e_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
-rows = 100
+rows = 1000
 cols = 4
 
 error_rates_BP = []
@@ -104,10 +104,10 @@ for e in e_list:
     error_rates_LBP.append(avg_error_rate_LBP)
 
 # 그래프 그리기
-plt.semilogy(e_list, error_rates_BP, marker='o', label='BP Error Rate')
-plt.semilogy(e_list, error_rates_ML, marker='s', label='ML Error Rate')
-plt.semilogy(e_list, error_rates_Hamming, marker='d', label='only Hamming Error Rate')
-plt.semilogy(e_list, error_rates_LBP, marker='h', label='LBP Error Rate')
+plt.semilogy(e_list, error_rates_BP, marker='o', label='MAPP Detector')
+plt.semilogy(e_list, error_rates_ML, marker='s', label='ML Detector')
+plt.semilogy(e_list, error_rates_Hamming, marker='d', label='Only Hamming Decoder')
+plt.semilogy(e_list, error_rates_LBP, marker='h', label='LBP Decoder')
 plt.xlabel('Error Probability ')
 plt.ylabel('Bit Error Rate[dB]')
 plt.title('Linear Decoder Comparison')
